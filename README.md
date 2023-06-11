@@ -1,7 +1,4 @@
-# 3D
-3D modeling using threejs
-
-# Sanjog Personal Portfolio ThreeJS
+# 3D modeling and animation with ThreeJS
 
 ## Major Concepts Of 3D Modeling:
 
