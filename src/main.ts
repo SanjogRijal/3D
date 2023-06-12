@@ -1,17 +1,14 @@
 import {
-  Scene,
-  WebGLRenderer,
-  Mesh,
   MeshBasicMaterial,
+  Scene,
   TorusGeometry,
+  TorusKnotGeometry,
 } from "three";
 import animateSRP from "./utils/animate";
-import CameraComponent from "./Components/camera";
 import SRPRenderer from "./Components/renderer";
 import SRPScene from "./Components/scene";
 import SRPCreateObjects from "./Components/Objects/SRPObjects";
-import camera from "./Components/camera";
-import scene from "./Components/scene";
+import CameraComponent from "./Components/camera";
 
 (function main() {
   const canvas =
@@ -19,7 +16,8 @@ import scene from "./Components/scene";
     document.createElement("canvas");
   const renderer = SRPRenderer({ rendererType: "webGL", canvas });
 
-  let geometry = new TorusGeometry(0.8, 0.3, 10, 200);
+  //   let geometry = new TorusKnotGeometry(0.5, 0.3, 6, 80, 50, 50);
+  let geometry = new TorusGeometry(0.5, 0.4, 3, 200);
   // Does not require lightning
   const material = new MeshBasicMaterial({ color: 0xff6347, wireframe: true });
 
