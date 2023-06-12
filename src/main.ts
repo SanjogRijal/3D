@@ -1,9 +1,7 @@
 import {
   AmbientLight,
-  GridHelper,
   MeshStandardMaterial,
   PointLight,
-  PointLightHelper,
   Scene,
   TorusGeometry,
 } from "three";
@@ -41,10 +39,10 @@ import addStar from "./utils/addStar";
   //   const lightHelper = new PointLightHelper(pointLight);
 
   // Grid Helper - Draws a 2D grid along the scene
-  const gridHelper = new GridHelper();
+  //   const gridHelper = new GridHelper();
 
   const torusObject = SRPCreateObjects({ geometry, material });
-  myObjects.push(torusObject, ambientLight, gridHelper);
+  myObjects.push(torusObject, ambientLight);
   const scene = new Scene();
 
   const camera: any = CameraComponent({
@@ -54,9 +52,13 @@ import addStar from "./utils/addStar";
   });
   // Orbit Controls: Allows us to move around the scene using our mouse.
   const orbitControl = new OrbitControls(camera, renderer.domElement);
-  const starsObject = addStar();
 
-  myObjects.push(starsObject, orbitControl);
+  //Add Stars to the Scene
+  Array(400)
+    .fill(1)
+    .forEach(() => addStar(scene));
+
+  myObjects.push(orbitControl);
 
   SRPScene(scene, myObjects);
 
