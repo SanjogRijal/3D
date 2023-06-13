@@ -1,42 +1,113 @@
-import {Scene, WebGLRenderer, CapsuleGeometry ,TorusGeometry, Material, Mesh, PerspectiveCamera, MeshBasicMaterial} from 'three'
+import {
+  AmbientLight,
+  BoxGeometry,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  PointLight,
+  Scene,
+  SphereGeometry,
+  TorusGeometry,
+} from "three";
+import { OrbitControls } from "three-orbitcontrols-ts";
+// import "three/examples/jsm/controls/OrbitControls";
+import animateSRP from "./utils/animate";
+import SRPRenderer from "./Components/renderer";
+import SRPScene from "./Components/scene";
+import SRPCreateObjects from "./Components/Objects/SRPObjects";
+import CameraComponent from "./Components/camera";
+import addStar from "./utils/addStar";
+import HeaderComponent from "./Components/Contents/Header";
+import setTextureBackgroundToScene from "./utils/addSceneBackground";
+import SpaceImage from "../public/space.jpg";
+import textureMapping from "./utils/textureMapping";
+// import SanjogImage from "../public/sanjog.jpg";
+import MoonImage from "../public/moon.avif";
 
-const scene = new Scene()
-const camera = new PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const canvas = document.getElementById('bgSrPortfolio') || document.createElement('canvas');
+(function main() {
+  const canvas =
+    document.getElementById("bgSrPortfolio") ||
+    document.createElement("canvas");
+  if (!document.getElementById("bgSrPortfolio")) {
+    document.querySelector("#app")?.appendChild(canvas);
+  }
+  canvas.id = canvas.id || "bgSrPortfolio";
+  const renderer = SRPRenderer({ rendererType: "webGL", canvas });
 
-const renderer = new WebGLRenderer({
-    canvas
-});
+  //   let geometry = new TorusKnotGeometry(0.5, 0.3, 6, 80, 50, 50);
+  let geometry = new TorusGeometry(1, 0.3, 16, 100);
+  // Does not require lightning
+  //   const material = new MeshBasicMaterial({ color: 0xff6347, wireframe: true });
 
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.setZ(3)
-let geometry = new CapsuleGeometry(0.5,0.5,22,20);
-const material = new MeshBasicMaterial({color: 0x00ff00, wireframe: true});
-const capsule = new Mesh(geometry, material)
-scene.add(capsule)
+  //Requires Lightning
+  const material = new MeshStandardMaterial({ color: 0xff6347 });
+  const pointLight = new PointLight(0xffffff);
+  pointLight.position.set(0.5, 0.5, 0.5);
+  let myObjects: Array<any> = [pointLight];
 
-//
-function animate(){
-    requestAnimationFrame(animate);
-    console.log(capsule.position)
-    const xChange = 0.01;
-    const yChange = 0.005;
-    const zChange = 0.01;
-    if(capsule.position.z > 1 ){
-    capsule.position.x += xChange;
-    capsule.position.y += yChange;
-    capsule.position.z += zChange;
-        
-} else {
-        capsule.position.x -= xChange;
-        capsule.position.y -= yChange;
-        capsule.position.z -= zChange;
+  //Ambient light lights up the whole object
+  const ambientLight = new AmbientLight(0xffffff);
 
-    }
+  //Light Helpers
+  //a. PointLightHelper - Helps us get the position of PointLight
+  //   const lightHelper = new PointLightHelper(pointLight);
 
-    renderer.render(scene, camera)
+  // Grid Helper - Draws a 2D grid along the scene
+  //   const gridHelper = new GridHelper();
 
-}
+  const torusObject = SRPCreateObjects({ geometry, material });
+  myObjects.push(torusObject, ambientLight);
+  const scene = new Scene();
 
-animate()
+  const camera: any = CameraComponent({
+    cameraType: "Perspective",
+    verticalFieldOfView: 75,
+    frustum: { FAR: 0.1, NEAR: 1000 },
+  });
+  // Orbit Controls: Allows us to move around the scene using our mouse.
+  const orbitControl = new OrbitControls(camera, renderer.domElement);
+  orbitControl.enableZoom = true;
+  orbitControl.dollyIn;
+  orbitControl.dollyOut;
+
+  //Add Stars to the Scene
+  Array(400)
+    .fill(1)
+    .forEach(() => addStar(scene));
+
+  myObjects.push(orbitControl);
+
+  SRPScene(scene, myObjects);
+  //Set Background
+  setTextureBackgroundToScene(SpaceImage, scene);
+
+  //Texture Mapping
+  // textureMapping({
+  //   image: SanjogImage,
+  //   scene,
+  //   geometry: BoxGeometry,
+  //   material: MeshBasicMaterial,
+  //   values: [0.5, 0.5, 0.5],
+  // });
+  textureMapping({
+    image: "fullmoon.png",
+    scene,
+    geometry: SphereGeometry,
+    material: MeshBasicMaterial,
+    values: [0.5, 32, 32],
+  });
+  //We don't want to have to re-render so we call animateSRP recursively in order to repaint.
+  animateSRP({
+    objectToRender: torusObject,
+    renderer,
+    scene,
+    camera,
+  });
+
+  HeaderComponent();
+})();
+
+//Texture Mapping
+/**
+ * CONCEPT: Texture Mapping
+ * -> Process of taking two dimensionals pixels and mapping them to a 3D geometry
+ */

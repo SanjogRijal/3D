@@ -31,3 +31,7 @@
 - We can also create our own Custom Shaders using WebGL
 
 ### MESH: Geometry + Material
+
+## Lighting
+
+### MeshStandardMaterial - Requires Lighting
