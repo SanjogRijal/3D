@@ -1,8 +1,11 @@
 import {
   AmbientLight,
+  BoxGeometry,
+  MeshBasicMaterial,
   MeshStandardMaterial,
   PointLight,
   Scene,
+  SphereGeometry,
   TorusGeometry,
 } from "three";
 import { OrbitControls } from "three-orbitcontrols-ts";
@@ -13,11 +16,21 @@ import SRPScene from "./Components/scene";
 import SRPCreateObjects from "./Components/Objects/SRPObjects";
 import CameraComponent from "./Components/camera";
 import addStar from "./utils/addStar";
+import HeaderComponent from "./Components/Contents/Header";
+import setTextureBackgroundToScene from "./utils/addSceneBackground";
+import SpaceImage from "../public/space.jpg";
+import textureMapping from "./utils/textureMapping";
+// import SanjogImage from "../public/sanjog.jpg";
+import MoonImage from "../public/moon.avif";
 
 (function main() {
   const canvas =
     document.getElementById("bgSrPortfolio") ||
     document.createElement("canvas");
+  if (!document.getElementById("bgSrPortfolio")) {
+    document.querySelector("#app")?.appendChild(canvas);
+  }
+  canvas.id = canvas.id || "bgSrPortfolio";
   const renderer = SRPRenderer({ rendererType: "webGL", canvas });
 
   //   let geometry = new TorusKnotGeometry(0.5, 0.3, 6, 80, 50, 50);
@@ -52,6 +65,9 @@ import addStar from "./utils/addStar";
   });
   // Orbit Controls: Allows us to move around the scene using our mouse.
   const orbitControl = new OrbitControls(camera, renderer.domElement);
+  orbitControl.enableZoom = true;
+  orbitControl.dollyIn;
+  orbitControl.dollyOut;
 
   //Add Stars to the Scene
   Array(400)
@@ -61,7 +77,24 @@ import addStar from "./utils/addStar";
   myObjects.push(orbitControl);
 
   SRPScene(scene, myObjects);
+  //Set Background
+  setTextureBackgroundToScene(SpaceImage, scene);
 
+  //Texture Mapping
+  // textureMapping({
+  //   image: SanjogImage,
+  //   scene,
+  //   geometry: BoxGeometry,
+  //   material: MeshBasicMaterial,
+  //   values: [0.5, 0.5, 0.5],
+  // });
+  textureMapping({
+    image: "fullmoon.png",
+    scene,
+    geometry: SphereGeometry,
+    material: MeshBasicMaterial,
+    values: [0.5, 32, 32],
+  });
   //We don't want to have to re-render so we call animateSRP recursively in order to repaint.
   animateSRP({
     objectToRender: torusObject,
@@ -69,4 +102,12 @@ import addStar from "./utils/addStar";
     scene,
     camera,
   });
+
+  HeaderComponent();
 })();
+
+//Texture Mapping
+/**
+ * CONCEPT: Texture Mapping
+ * -> Process of taking two dimensionals pixels and mapping them to a 3D geometry
+ */
