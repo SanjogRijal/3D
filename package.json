@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "three": "^0.153.0",
-    "three-orbitcontrols-ts": "^0.1.2"
+    "three-orbitcontrols-ts": "^0.1.2",
+    "three-text-geometry": "^0.0.0"
   }
 }
