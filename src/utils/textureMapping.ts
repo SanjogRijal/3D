@@ -23,6 +23,9 @@ const textureMapping = ({
   );
 
   scene.add(mapping);
+  mapping.position.z = 30;
+  mapping.position.setX(-10);
+  return mapping;
 };
 
 export default textureMapping;

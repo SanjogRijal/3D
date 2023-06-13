@@ -1,6 +1,5 @@
 import {
   AmbientLight,
-  BoxGeometry,
   MeshBasicMaterial,
   MeshStandardMaterial,
   PointLight,
@@ -16,21 +15,19 @@ import SRPScene from "./Components/scene";
 import SRPCreateObjects from "./Components/Objects/SRPObjects";
 import CameraComponent from "./Components/camera";
 import addStar from "./utils/addStar";
-import HeaderComponent from "./Components/Contents/Header";
+// import HeaderComponent from "./Components/Contents/Header";
 import setTextureBackgroundToScene from "./utils/addSceneBackground";
-import SpaceImage from "../public/space.jpg";
+import SpaceImage from "./space.jpg";
 import textureMapping from "./utils/textureMapping";
+// import MainContent from "./Components/Contents/MainContent";
+import moveCamera from "./utils/moveCamera";
+
 // import SanjogImage from "../public/sanjog.jpg";
-import MoonImage from "../public/moon.avif";
 
 (function main() {
   const canvas =
     document.getElementById("bgSrPortfolio") ||
     document.createElement("canvas");
-  if (!document.getElementById("bgSrPortfolio")) {
-    document.querySelector("#app")?.appendChild(canvas);
-  }
-  canvas.id = canvas.id || "bgSrPortfolio";
   const renderer = SRPRenderer({ rendererType: "webGL", canvas });
 
   //   let geometry = new TorusKnotGeometry(0.5, 0.3, 6, 80, 50, 50);
@@ -65,9 +62,6 @@ import MoonImage from "../public/moon.avif";
   });
   // Orbit Controls: Allows us to move around the scene using our mouse.
   const orbitControl = new OrbitControls(camera, renderer.domElement);
-  orbitControl.enableZoom = true;
-  orbitControl.dollyIn;
-  orbitControl.dollyOut;
 
   //Add Stars to the Scene
   Array(400)
@@ -88,12 +82,12 @@ import MoonImage from "../public/moon.avif";
   //   material: MeshBasicMaterial,
   //   values: [0.5, 0.5, 0.5],
   // });
-  textureMapping({
+  let moon = textureMapping({
     image: "fullmoon.png",
     scene,
     geometry: SphereGeometry,
     material: MeshBasicMaterial,
-    values: [0.5, 32, 32],
+    values: [4, 32, 32],
   });
   //We don't want to have to re-render so we call animateSRP recursively in order to repaint.
   animateSRP({
@@ -103,7 +97,23 @@ import MoonImage from "../public/moon.avif";
     camera,
   });
 
-  HeaderComponent();
+  document.body.onscroll = () => {
+    moveCamera(
+      [
+        { objectToZoom: torusObject, x: true, y: true, z: true },
+        {
+          objectToZoom: moon,
+          x: true,
+          y: true,
+          z: false,
+        },
+      ],
+      camera
+    );
+  };
+
+  // HeaderComponent();
+  // document.querySelector("#app")?.appendChild(MainContent());
 })();
 
 //Texture Mapping
