@@ -1,10 +1,15 @@
 import {
   AmbientLight,
+  BoxGeometry,
+  DoubleSide,
+  FogExp2,
+  Mesh,
   MeshBasicMaterial,
   MeshStandardMaterial,
+  PlaneGeometry,
   PointLight,
   Scene,
-  SphereGeometry,
+  Texture,
   TorusGeometry,
 } from "three";
 import { OrbitControls } from "three-orbitcontrols-ts";
@@ -29,6 +34,22 @@ import moveCamera from "./utils/moveCamera";
     document.getElementById("bgSrPortfolio") ||
     document.createElement("canvas");
   const renderer = SRPRenderer({ rendererType: "webGL", canvas });
+  const contentCanvas: HTMLCanvasElement =
+    document.querySelector("#bgSrContent") || document.createElement("canvas");
+  const context: any = contentCanvas.getContext("2d");
+  context.font = "50px sans-serif";
+  context.fillText("Hello World!", 0, 60);
+
+  const texture = new Texture(contentCanvas);
+  texture.needsUpdate = true;
+
+  let textureMaterial = new MeshBasicMaterial({
+    map: texture,
+    side: DoubleSide,
+  });
+  textureMaterial.transparent = true;
+
+  let mesh = new Mesh(new PlaneGeometry(50, 10), textureMaterial);
 
   //   let geometry = new TorusKnotGeometry(0.5, 0.3, 6, 80, 50, 50);
   let geometry = new TorusGeometry(1, 0.3, 16, 100);
@@ -60,6 +81,7 @@ import moveCamera from "./utils/moveCamera";
     verticalFieldOfView: 75,
     frustum: { FAR: 0.1, NEAR: 1000 },
   });
+  renderer.render(mesh, camera);
   // Orbit Controls: Allows us to move around the scene using our mouse.
   const orbitControl = new OrbitControls(camera, renderer.domElement);
 
@@ -75,20 +97,20 @@ import moveCamera from "./utils/moveCamera";
   setTextureBackgroundToScene(SpaceImage, scene);
 
   //Texture Mapping
-  // textureMapping({
-  //   image: SanjogImage,
-  //   scene,
-  //   geometry: BoxGeometry,
-  //   material: MeshBasicMaterial,
-  //   values: [0.5, 0.5, 0.5],
-  // });
-  let moon = textureMapping({
-    image: "fullmoon.png",
+  const myImage = textureMapping({
+    image: "sanjog.jpg",
     scene,
-    geometry: SphereGeometry,
+    geometry: BoxGeometry,
     material: MeshBasicMaterial,
-    values: [4, 32, 32],
+    values: [10, 10, 10],
   });
+  // let moon = textureMapping({
+  //   image: "fullmoon.png",
+  //   scene,
+  //   geometry: SphereGeometry,
+  //   material: MeshBasicMaterial,
+  //   values: [4, 32, 32],
+  // });
   //We don't want to have to re-render so we call animateSRP recursively in order to repaint.
   animateSRP({
     objectToRender: torusObject,
@@ -102,7 +124,7 @@ import moveCamera from "./utils/moveCamera";
       [
         { objectToZoom: torusObject, x: true, y: true, z: true },
         {
-          objectToZoom: moon,
+          objectToZoom: myImage,
           x: true,
           y: true,
           z: false,
@@ -111,6 +133,7 @@ import moveCamera from "./utils/moveCamera";
       camera
     );
   };
+  scene.fog = new FogExp2(0x11111f, 0.002);
 
   // HeaderComponent();
   // document.querySelector("#app")?.appendChild(MainContent());
